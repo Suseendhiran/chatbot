@@ -1,5 +1,9 @@
 .App {
   text-align: center;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  width: 100%;
 }
 
 .App-logo {
@@ -35,4 +39,81 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.wrapper {
+  margin: auto;
+  width: 400px;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+
+  /* height: auto; */
+}
+
+.message {
+  text-align: left;
+}
+
+.messageinputWrapper {
+  display: flex;
+  margin-top: 10px;
+  height: 40px;
+}
+
+.messageinput {
+  padding: 10px;
+  flex-grow: 1;
+  margin-right: 10px;
+  border: 2px solid black;
+  border-radius: 8px;
+}
+.sendButton {
+  padding: 5px;
+  height: 100%;
+  background-color: white;
+  border: 2px solid black;
+  border-radius: 6px;
+}
+.userid {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.chatScreenWrapper {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid black;
+  border-radius: 8px;
+  padding: 15px;
+  margin: auto;
+  margin-top: 30px;
+  height: 100%;
+  width: 100%;
+  flex-grow: 1;
+  box-sizing: border-box;
+  height: 500px;
+  overflow-y: scroll;
+  gap: 10px;
+}
+
+.messageWrapper {
+  text-align: left;
+  display: flex;
+  width: 75%;
+  flex-direction: column;
+  box-sizing: content-box;
+  border: 1px solid black;
+  padding: 5px;
+  border-radius: 6px;
+}
+
+.messageWrapper p {
+  margin: 0;
+}
+
+.eachmessage {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }

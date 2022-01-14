@@ -6,52 +6,63 @@ import ChatScreen from "./Components/ChatScreen";
 import SendMessage from "./Components/SendMessage";
 
 const socket = io("http://localhost:4000/");
-var userId = "";
-socket.on("connect", () => {
-  userId = socket.id;
-  document.getElementsByClassName(
-    "userid"
-  )[0].innerText = `Your chat id: ${userId}`;
-  //localStorage.setItem("userId", socket.id);
-});
 
 function App() {
-  const [messages, setMessages] = useState([]);
+  //console.log("init");
   const [userId, setUserId] = useState("");
+  const sessionStorageMessages = JSON.parse(sessionStorage.getItem(userId));
+  const [messages, setMessages] = useState(
+    sessionStorageMessages ? sessionStorageMessages : []
+  );
+
   const messageRef = useRef(null);
 
   function createSocketConnection() {
+    console.log("Initial Connection", new Date());
+
     socket.on("connect", () => {
-      setUserId(socket.id);
-      // document.getElementsByClassName(
-      //   "userid"
-      // )[0].innerText = `Your chat id: ${userId}`;
-      //localStorage.setItem("userId", socket.id);
+      const id = socket.id;
+      setUserId(id);
+      sessionStorage.setItem("userId", id);
+    });
+    socket.on("toClients", (userMessage, botMessage) => {
+      //console.log("inside emit", userMessage, botMessage, messages);
+      setAllMessages(userMessage, botMessage, messages);
     });
   }
-  socket.on("toClients", (userMessage, botMessage) => {
-    console.log("inside emit", userMessage, botMessage);
+
+  function setAllMessages(userMessage, botMessage) {
+    const previousMessages = JSON.parse(sessionStorage.getItem("messages"));
+    const allMessages = previousMessages
+      ? [...previousMessages, userMessage, botMessage]
+      : [userMessage, botMessage];
+    console.log(
+      "inside all set"
+
+      //previousMessages
+      // userMessage,
+      // botMessage,
+      // userMessage.senderId === userId
+    );
     if (userMessage.senderId === userId) {
-      setMessages([...messages, botMessage]);
+      setMessages([...previousMessages, botMessage]);
+      sessionStorage.setItem("messages", JSON.stringify(allMessages));
       return;
     }
-    setMessages([...messages, userMessage, botMessage]);
-    // const messageDetails = {
-    //   message: message,
-    //   senderId: senderId,
-    // };
-    // setMessages([...messages, messageDetails]);
-  });
+    setMessages([...allMessages]);
+    sessionStorage.setItem("messages", JSON.stringify(allMessages));
+  }
 
   const handleSendMessage = (message) => {
     console.log("message", message);
     if (!message) return;
     socket.emit("sendMessage", message);
     setMessages([...messages, { message: message, senderId: userId }]);
-    console.log("ref", messageRef.current);
+    // console.log("ref", messageRef.current);
   };
 
   const disconnectSocket = () => {
+    console.log("disconnected");
     socket.disconnect();
   };
 
@@ -61,12 +72,20 @@ function App() {
     }
     return () => {
       disconnectSocket();
+      setMessages([]);
+      sessionStorage.clear();
     };
   }, []);
+  useEffect(() => {
+    //console.log(messages);
+    sessionStorage.clear();
+    setMessages([]);
+  }, [userId]);
 
+  // useEffect(() => {},[messages])
   return (
     <div className="App">
-      <h3 className="userid">Your chat id {userId}</h3>
+      <h3 className="userid">Your chat id: {userId}</h3>
       <div className="wrapper">
         <ChatScreen
           messages={messages}

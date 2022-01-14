@@ -29,13 +29,18 @@ function App() {
       //localStorage.setItem("userId", socket.id);
     });
   }
-  socket.on("toClients", (message, senderId) => {
-    console.log("inside emit", senderId);
-    const messageDetails = {
-      message: message,
-      senderId: senderId,
-    };
-    setMessages([...messages, messageDetails]);
+  socket.on("toClients", (userMessage, botMessage) => {
+    console.log("inside emit", userMessage, botMessage);
+    if (userMessage.senderId === userId) {
+      setMessages([...messages, botMessage]);
+      return;
+    }
+    setMessages([...messages, userMessage, botMessage]);
+    // const messageDetails = {
+    //   message: message,
+    //   senderId: senderId,
+    // };
+    // setMessages([...messages, messageDetails]);
   });
 
   const handleSendMessage = (message) => {

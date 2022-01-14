@@ -1,11 +1,21 @@
 import React, { useEffect, useRef } from "react";
 
-function Index({ messages, userId, messageRef }) {
+function Index({ messages, userId }) {
+  const messageRef = useRef(null);
+
+  useEffect(() => {
+    // const element = document.getElementById("scrollMessages");
+    // console.log(element);
+    // element.scrollIntoView();
+    messageRef.current.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages]);
   return (
     <div className="chatScreenWrapper">
-      {messages.map((message) => {
+      {messages.map((message, index) => {
         return (
-          <div className="eachmessage" ref={messageRef}>
+          <div className="eachmessage" key={index}>
             <div
               className="messageWrapper"
               style={{
@@ -21,6 +31,7 @@ function Index({ messages, userId, messageRef }) {
           </div>
         );
       })}
+      <div id="scrollMessages" ref={messageRef} />
     </div>
   );
 }

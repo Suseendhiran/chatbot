@@ -8,14 +8,11 @@ import SendMessage from "./Components/SendMessage";
 const socket = io("http://localhost:4000/");
 
 function App() {
-  //console.log("init");
   const [userId, setUserId] = useState("");
   const sessionStorageMessages = JSON.parse(sessionStorage.getItem(userId));
   const [messages, setMessages] = useState(
     sessionStorageMessages ? sessionStorageMessages : []
   );
-
-  const messageRef = useRef(null);
 
   function createSocketConnection() {
     console.log("Initial Connection", new Date());
@@ -26,7 +23,7 @@ function App() {
       sessionStorage.setItem("userId", id);
     });
     socket.on("toClients", (userMessage, botMessage) => {
-      //console.log("inside emit", userMessage, botMessage, messages);
+      console.log("inside emit", userMessage, botMessage, messages);
       setAllMessages(userMessage, botMessage, messages);
     });
   }
@@ -58,7 +55,6 @@ function App() {
     if (!message) return;
     socket.emit("sendMessage", message);
     setMessages([...messages, { message: message, senderId: userId }]);
-    // console.log("ref", messageRef.current);
   };
 
   const disconnectSocket = () => {
@@ -87,11 +83,7 @@ function App() {
     <div className="App">
       <h3 className="userid">Your chat id: {userId}</h3>
       <div className="wrapper">
-        <ChatScreen
-          messages={messages}
-          userId={userId}
-          messageRef={messageRef}
-        />
+        <ChatScreen messages={messages} userId={userId} />
         <SendMessage
           handleSendMessage={(message) => handleSendMessage(message)}
         />
